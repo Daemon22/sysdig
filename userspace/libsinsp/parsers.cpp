@@ -2188,7 +2188,7 @@ void sinsp_parser::parse_connect_exit(sinsp_evt *evt)
 		// causes a connect with the wrong socket type to fail.
 		// Assert in debug mode and just keep going in release mode.
 		//
-		ASSERT(evt->m_fdinfo->m_type == SCAP_FD_IPV4_SOCK);
+		ASSERT(evt->m_fdinfo->m_type == SCAP_FD_IPV4_SOCK || evt->m_fdinfo->m_type == SCAP_FD_IPV4_SERVSOCK);
 
 #ifndef HAS_ANALYZER
 		//
