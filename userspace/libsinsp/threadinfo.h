@@ -207,6 +207,7 @@ public:
 	int64_t m_sid; ///< The session id of the process containing this thread.
 	string m_comm; ///< Command name (e.g. "top")
 	string m_exe; ///< argv[0] (e.g. "sshd: user@pts/4")
+	string m_filename; ///< execve filename (first parameter)
 	vector<string> m_args; ///< Command line arguments (e.g. "-d1")
 	vector<string> m_env; ///< Environment variables
 	vector<pair<string, string>> m_cgroups; ///< subsystem-cgroup pairs

@@ -590,6 +590,16 @@ public:
 	void set_hostname_and_port_resolution_mode(bool enable);
 
 	/*!
+	  \brief Set whether Sysdig should resolve execve filename or not.
+
+	  \note Sysdig can use sinsp_utils::concatenate_paths to resolve filename with cwd
+
+	  \param enable If set to false it will enable this function and use plain
+	   numerical values.
+	*/
+	void set_filename_resolution_mode(bool enable);
+
+	/*!
 	  \brief Set the runtime flag for resolving the timespan in a human
 	   readable mode.
 
@@ -792,6 +802,7 @@ private:
 	bool m_isdebug_enabled;
 	bool m_isfatfile_enabled;
 	bool m_hostname_and_port_resolution_enabled;
+	bool m_filename_resolution_mode;
 	char m_output_time_flag;
 	uint32_t m_max_evt_output_len;
 	bool m_compress;

@@ -314,6 +314,7 @@ void sinsp_threadinfo::init(scap_threadinfo* pi)
 
 	m_comm = pi->comm;
 	m_exe = pi->exe;
+	m_filename = pi->filename;
 	set_args(pi->args, pi->args_len);
 	set_env(pi->env, pi->env_len);
 	set_cwd(pi->cwd, (uint32_t)strlen(pi->cwd));

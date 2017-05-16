@@ -335,7 +335,11 @@ void sinsp_parser::process_event(sinsp_evt *evt)
 	case PPME_SYSCALL_EXECVE_14_X:
 	case PPME_SYSCALL_EXECVE_15_X:
 	case PPME_SYSCALL_EXECVE_16_X:
+	case PPME_SYSCALL_EXECVE_17_X:
 		parse_execve_exit(evt);
+		break;
+	case PPME_SYSCALL_EXECVE_17_E:
+		store_event(evt);
 		break;
 	case PPME_PROCEXIT_E:
 	case PPME_PROCEXIT_1_E:
@@ -1091,6 +1095,9 @@ void sinsp_parser::parse_clone_exit(sinsp_evt *evt)
 		// Copy the full executable name from the parent
 		tinfo.m_exe = ptinfo->m_exe;
 
+		// Copy the filename from the parent
+		tinfo.m_filename = ptinfo->m_filename;
+
 		// Copy the command arguments from the parent
 		tinfo.m_args = ptinfo->m_args;
 
@@ -1128,6 +1135,7 @@ void sinsp_parser::parse_clone_exit(sinsp_evt *evt)
 			//
 			tinfo.m_comm = ptinfo->m_comm;
 			tinfo.m_exe = ptinfo->m_exe;
+			tinfo.m_filename = ptinfo->m_filename;
 			tinfo.m_args = ptinfo->m_args;
 			tinfo.m_root = ptinfo->m_root;
 			tinfo.m_sid = ptinfo->m_sid;
@@ -1170,6 +1178,7 @@ void sinsp_parser::parse_clone_exit(sinsp_evt *evt)
 			//
 			ptinfo->m_comm = tinfo.m_comm;
 			ptinfo->m_exe = tinfo.m_exe;
+			ptinfo->m_filename = tinfo.m_filename;
 			ptinfo->set_args(parinfo->m_val, parinfo->m_len);
 		}
 	}
@@ -1463,6 +1472,7 @@ void sinsp_parser::parse_execve_exit(sinsp_evt *evt)
 		break;
 	case PPME_SYSCALL_EXECVE_15_X:
 	case PPME_SYSCALL_EXECVE_16_X:
+	case PPME_SYSCALL_EXECVE_17_X:
 		// Get the comm
 		parinfo = evt->get_param(13);
 		evt->m_tinfo->m_comm = parinfo->m_val;
@@ -1497,6 +1507,7 @@ void sinsp_parser::parse_execve_exit(sinsp_evt *evt)
 	case PPME_SYSCALL_EXECVE_14_X:
 	case PPME_SYSCALL_EXECVE_15_X:
 	case PPME_SYSCALL_EXECVE_16_X:
+	case PPME_SYSCALL_EXECVE_17_X:
 		// Get the pgflt_maj
 		parinfo = evt->get_param(8);
 		ASSERT(parinfo->m_len == sizeof(uint64_t));
@@ -1526,6 +1537,7 @@ void sinsp_parser::parse_execve_exit(sinsp_evt *evt)
 		ASSERT(false);
 	}
 
+	sinsp_evt *enter_evt = &m_tmp_evt;
 	switch(etype)
 	{
 	case PPME_SYSCALL_EXECVE_8_X:
@@ -1542,6 +1554,7 @@ void sinsp_parser::parse_execve_exit(sinsp_evt *evt)
 		evt->m_tinfo->set_env(parinfo->m_val, parinfo->m_len);
 		break;
 	case PPME_SYSCALL_EXECVE_16_X:
+	case PPME_SYSCALL_EXECVE_17_X:
 		// Get the environment
 		parinfo = evt->get_param(15);
 		evt->m_tinfo->set_env(parinfo->m_val, parinfo->m_len);
@@ -1554,6 +1567,22 @@ void sinsp_parser::parse_execve_exit(sinsp_evt *evt)
 		if(evt->m_tinfo->m_container_id.empty())
 		{
 			m_inspector->m_container_manager.resolve_container(evt->m_tinfo, m_inspector->m_islive);
+		}
+
+		// Get filename from enter event
+		if (retrieve_enter_event(enter_evt, evt))
+		{
+			evt->m_tinfo->m_filename = enter_evt->get_param(0)->m_val;
+
+			// Translate relative path using the cwd if enabled
+			if (m_inspector->m_filename_resolution_mode)
+			{
+				char fullpath[SCAP_MAX_PATH_SIZE];
+				sinsp_utils::concatenate_paths(fullpath, SCAP_MAX_PATH_SIZE, evt->m_tinfo->m_cwd.c_str(),
+											   (uint32_t)evt->m_tinfo->m_cwd.size(), evt->m_tinfo->m_filename.c_str(),
+											   (uint32_t)evt->m_tinfo->m_filename.size());
+				evt->m_tinfo->m_filename = fullpath;
+			}
 		}
 		break;
 	default:
