@@ -93,7 +93,7 @@ sinsp::sinsp() :
 	m_isdebug_enabled = false;
 	m_isfatfile_enabled = false;
 	m_hostname_and_port_resolution_enabled = true;
-	m_filename_resolution_mode = true;
+	m_filename_resolution_mode = false;
 	m_output_time_flag = 'h';
 	m_max_evt_output_len = 0;
 	m_filesize = -1;
