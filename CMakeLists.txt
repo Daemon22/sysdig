@@ -127,7 +127,7 @@ else()
 			URL "http://download.draios.com/dependencies/LuaJIT-2.0.3.tar.gz"
 			URL_MD5 "f14e9104be513913810cd59c8c658dc0"
 			CONFIGURE_COMMAND ""
-			BUILD_COMMAND ${CMD_MAKE}
+			BUILD_COMMAND CFLAGS=-fPIC ${CMD_MAKE}
 			BUILD_IN_SOURCE 1
 			INSTALL_COMMAND "")
 	else()
@@ -185,7 +185,7 @@ else()
 		ExternalProject_Add(zlib
 			URL "http://download.draios.com/dependencies/zlib-1.2.8.tar.gz"
 			URL_MD5 "44d667c142d7cda120332623eab69f40"
-			CONFIGURE_COMMAND "./configure"
+			CONFIGURE_COMMAND "CFLAGS=-fPIC ./configure"
 			BUILD_COMMAND ${CMD_MAKE}
 			BUILD_IN_SOURCE 1
 			INSTALL_COMMAND "")
@@ -250,7 +250,7 @@ if(NOT WIN32)
 			URL "http://download.draios.com/dependencies/ncurses-6.0-20150725.tgz"
 			URL_MD5 "32b8913312e738d707ae68da439ca1f4"
 			CONFIGURE_COMMAND ./configure --without-cxx --without-cxx-binding --without-ada --without-manpages --without-progs --without-tests --with-terminfo-dirs=/etc/terminfo:/lib/terminfo:/usr/share/terminfo
-			BUILD_COMMAND ${CMD_MAKE}
+			BUILD_COMMAND CFLAGS=-fPIC ${CMD_MAKE}
 			BUILD_IN_SOURCE 1
 			INSTALL_COMMAND "")
 	endif()
@@ -279,7 +279,7 @@ if(NOT WIN32 AND NOT APPLE)
 			URL "http://download.draios.com/dependencies/libb64-1.2.src.zip"
 			URL_MD5 "a609809408327117e2c643bed91b76c5"
 			CONFIGURE_COMMAND ""
-			BUILD_COMMAND ${CMD_MAKE}
+			BUILD_COMMAND CFLAGS=-fPIC ${CMD_MAKE}
 			BUILD_IN_SOURCE 1
 			INSTALL_COMMAND "")
 	endif()

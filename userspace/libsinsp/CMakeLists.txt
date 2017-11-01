@@ -90,6 +90,8 @@ if(NOT WIN32)
 		"${LUAJIT_LIB}"
 		dl
 		pthread)
+
+	set_target_properties(sinsp PROPERTIES COMPILE_FLAGS "-fPIC")
 else()
 	target_link_libraries(sinsp
 		"${LUAJIT_LIB}")

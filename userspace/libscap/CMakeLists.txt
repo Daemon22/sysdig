@@ -14,6 +14,10 @@ add_library(scap STATIC
 	event_table.c
 	syscall_info_table.c)
 
+if(NOT WIN32)
+	set_target_properties(scap PROPERTIES COMPILE_FLAGS "-fPIC")
+endif()
+
 if(USE_BUNDLED_ZLIB)
 	add_dependencies(scap zlib)
 endif()
